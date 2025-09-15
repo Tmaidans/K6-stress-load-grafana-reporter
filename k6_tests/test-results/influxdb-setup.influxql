@@ -1,0 +1,14 @@
+
+-- Create database
+CREATE DATABASE k6_load_tests;
+
+-- Create retention policy
+CREATE RETENTION POLICY "k6_retention" ON "k6_load_tests" 
+  DURATION 30d REPLICATION 1 DEFAULT;
+
+-- Create user (if not exists)
+CREATE USER "k6" WITH PASSWORD 'k6password';
+
+-- Grant privileges
+GRANT ALL ON "k6_load_tests" TO "k6";
+    

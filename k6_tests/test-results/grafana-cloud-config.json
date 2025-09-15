@@ -1,0 +1,30 @@
+{
+  "grafana_cloud": {
+    "influxdb": {
+      "url": "https://your-instance.grafana.net:8086",
+      "database": "k6_load_tests",
+      "username": "your-username",
+      "password": "your-api-key"
+    },
+    "grafana": {
+      "url": "https://your-instance.grafana.net",
+      "username": "your-username",
+      "password": "your-password"
+    }
+  },
+  "instructions": {
+    "setup": [
+      "1. Sign up for Grafana Cloud at https://grafana.com/products/cloud/",
+      "2. Get your InfluxDB credentials from Grafana Cloud → Data Sources → InfluxDB",
+      "3. Update the configuration in this file with your credentials",
+      "4. Run: k6 cloud login --token YOUR_K6_CLOUD_TOKEN",
+      "5. Run: ./run-k6-grafana-cloud.sh light"
+    ],
+    "k6_cloud": [
+      "1. Go to https://app.k6.io/ and sign up",
+      "2. Get your API token from Settings → API Tokens",
+      "3. Run: k6 cloud login --token YOUR_TOKEN",
+      "4. Run: k6 cloud run k6_api_load_test.js --env SCENARIO=light"
+    ]
+  }
+}

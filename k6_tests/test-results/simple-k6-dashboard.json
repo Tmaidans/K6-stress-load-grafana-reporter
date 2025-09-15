@@ -1,0 +1,24 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "K6 Load Test Dashboard",
+    "tags": ["k6", "load-testing"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Welcome to K6 Monitoring",
+        "type": "text",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "options": {
+          "content": "# K6 Load Test Dashboard\n\nThis dashboard will show your k6 test metrics once you:\n\n1. **Configure the InfluxDB datasource**\n2. **Run a k6 test** with InfluxDB output\n\n## Next Steps:\n- Go to Configuration → Data Sources\n- Add InfluxDB datasource\n- Run: `./run-k6-grafana.sh light`\n\n## Datasource Settings:\n- **Type**: InfluxDB\n- **URL**: http://influxdb:8086\n- **Database**: k6_load_tests\n- **User**: k6\n- **Password**: k6password"
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  }
+}

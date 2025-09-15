@@ -1,0 +1,41 @@
+{
+  "dashboard": {
+    "title": "K6 Test Dashboard",
+    "panels": [
+      {
+        "title": "Total Requests",
+        "type": "stat",
+        "targets": [
+          {
+            "query": "SELECT sum(\"value\") FROM \"http_reqs\" WHERE $timeFilter",
+            "rawQuery": true
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "title": "Response Time",
+        "type": "stat",
+        "targets": [
+          {
+            "query": "SELECT mean(\"value\") FROM \"http_req_duration\" WHERE $timeFilter",
+            "rawQuery": true
+          }
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "title": "Response Time Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "query": "SELECT mean(\"value\") FROM \"http_req_duration\" WHERE $timeFilter GROUP BY time(1m)",
+            "rawQuery": true
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      }
+    ],
+    "time": {"from": "now-1h", "to": "now"}
+  }
+}

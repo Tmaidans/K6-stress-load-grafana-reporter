@@ -1,0 +1,50 @@
+to {
+  "dashboard": {
+    "title": "K6 Load Test Dashboard",
+    "tags": ["k6"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Total Requests",
+        "type": "stat",
+        "targets": [
+          {
+            "query": "SELECT sum(\"value\") FROM \"http_reqs\" WHERE $timeFilter",
+            "rawQuery": true,
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Response Time",
+        "type": "stat",
+        "targets": [
+          {
+            "query": "SELECT mean(\"value\") FROM \"http_req_duration\" WHERE $timeFilter",
+            "rawQuery": true,
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  }
+}

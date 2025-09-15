@@ -1,0 +1,553 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "K6 Load Test Performance Dashboard",
+    "description": "Comprehensive dashboard for monitoring K6 load test performance with real-time metrics, response times, error rates, and endpoint-specific analytics.",
+    "tags": ["k6", "load-testing", "performance", "api", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate (RPS)",
+        "type": "stat",
+        "description": "Current requests per second across all endpoints",
+        "targets": [
+          {
+            "expr": "rate(http_reqs[1m])",
+            "refId": "A",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 50},
+                {"color": "red", "value": 100}
+              ]
+            },
+            "unit": "reqps",
+            "min": 0,
+            "max": 200
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "horizontal"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Response Time (P95)",
+        "type": "stat",
+        "description": "95th percentile response time across all requests",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_req_duration_bucket[5m]))",
+            "refId": "A",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1000},
+                {"color": "red", "value": 2000}
+              ]
+            },
+            "unit": "ms",
+            "min": 0,
+            "max": 5000
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "horizontal"
+        }
+      },
+      {
+        "id": 3,
+        "title": "Error Rate",
+        "type": "stat",
+        "description": "Percentage of failed requests",
+        "targets": [
+          {
+            "expr": "rate(http_req_failed[1m]) * 100",
+            "refId": "A",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 10
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "horizontal"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Virtual Users",
+        "type": "stat",
+        "description": "Current number of active virtual users",
+        "targets": [
+          {
+            "expr": "vus",
+            "refId": "A",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short",
+            "min": 0
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "horizontal"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Response Time Trends",
+        "type": "timeseries",
+        "description": "Response time percentiles over time",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_req_duration_bucket[1m]))",
+            "refId": "A",
+            "legendFormat": "P50",
+            "datasource": "InfluxDB"
+          },
+          {
+            "expr": "histogram_quantile(0.90, rate(http_req_duration_bucket[1m]))",
+            "refId": "B",
+            "legendFormat": "P90",
+            "datasource": "InfluxDB"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_req_duration_bucket[1m]))",
+            "refId": "C",
+            "legendFormat": "P95",
+            "datasource": "InfluxDB"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_req_duration_bucket[1m]))",
+            "refId": "D",
+            "legendFormat": "P99",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Request Rate by Endpoint",
+        "type": "timeseries",
+        "description": "Requests per second broken down by API endpoint",
+        "targets": [
+          {
+            "expr": "rate(http_reqs{endpoint!=\"\"}[1m])",
+            "refId": "A",
+            "legendFormat": "{{endpoint}}",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Response Time by Endpoint",
+        "type": "timeseries",
+        "description": "P95 response time for each API endpoint",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_req_duration_bucket{endpoint!=\"\"}[1m]))",
+            "refId": "A",
+            "legendFormat": "{{endpoint}} P95",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Error Rate by Endpoint",
+        "type": "timeseries",
+        "description": "Error rate percentage for each API endpoint",
+        "targets": [
+          {
+            "expr": "rate(http_req_failed{endpoint!=\"\"}[1m]) * 100",
+            "refId": "A",
+            "legendFormat": "{{endpoint}}",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Load Test Scenarios",
+        "type": "table",
+        "description": "Current test scenario and phase information",
+        "targets": [
+          {
+            "expr": "group by (phase, test_run_id, environment) (http_reqs)",
+            "refId": "A",
+            "datasource": "InfluxDB",
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
+        "options": {
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "phase"
+            }
+          ]
+        }
+      },
+      {
+        "id": 10,
+        "title": "Data Transfer Rate",
+        "type": "timeseries",
+        "description": "Data transfer rate in bytes per second",
+        "targets": [
+          {
+            "expr": "rate(http_req_duration[1m]) * rate(http_reqs[1m])",
+            "refId": "A",
+            "legendFormat": "Data Transfer Rate",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "Bps",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "Iteration Rate",
+        "type": "timeseries",
+        "description": "Number of test iterations completed per second",
+        "targets": [
+          {
+            "expr": "rate(iterations[1m])",
+            "refId": "A",
+            "legendFormat": "Iterations/sec",
+            "datasource": "InfluxDB"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "endpoint",
+          "type": "query",
+          "query": "label_values(http_reqs, endpoint)",
+          "datasource": "InfluxDB",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true,
+          "allValue": ".*"
+        },
+        {
+          "name": "phase",
+          "type": "query",
+          "query": "label_values(http_reqs, phase)",
+          "datasource": "InfluxDB",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true,
+          "allValue": ".*"
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Test Runs",
+          "datasource": "InfluxDB",
+          "enable": true,
+          "expr": "http_reqs{test_run_id!=\"\"}",
+          "iconColor": "blue",
+          "tags": ["test-run"]
+        }
+      ]
+    }
+  }
+}

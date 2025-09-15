@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: influxdb:2.7
+    container_name: k6-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=k6
+      - DOCKER_INFLUXDB_INIT_PASSWORD=k6password
+      - DOCKER_INFLUXDB_INIT_ORG=k6-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=k6_load_tests
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=k6-admin-token
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    networks:
+      - k6-monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: k6-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-influxdb-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-k6-dashboard.json:/etc/grafana/provisioning/dashboards/k6-dashboard.json
+    networks:
+      - k6-monitoring
+    depends_on:
+      - influxdb
+
+volumes:
+  influxdb-data:
+  influxdb-config:
+  grafana-data:
+
+networks:
+  k6-monitoring:
+    driver: bridge
